@@ -9,10 +9,6 @@
     <link rel="stylesheet" href="css/magic.css">
     <title>Homepage</title>
 </head>
-<?php
-$text = "World";
-echo "Hello " . $text . "!";
-?>
 <body>
     <div class="button-wrapper">
         <button id="SideMenuBtn" onclick="openMenu()" class="scroll-button">&#10094;</button>
