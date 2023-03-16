@@ -15,3 +15,6 @@ function openMenu() {
     //console.log(buttonStatus)
 
 }
+function Login_out() {
+    location.href = "register";
+}

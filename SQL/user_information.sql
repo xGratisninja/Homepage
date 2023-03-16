@@ -31,6 +31,7 @@ CREATE TABLE `user_information` (
   `id` int(11) NOT NULL,
   `UserName` varchar(255) NOT NULL,
   `UserPassword` varchar(255) NOT NULL,
+  `UserEmail` varchar(255) NOT NULL,
   `UserRole` enum('admin','user') NOT NULL,
   `Created` timestamp NOT NULL DEFAULT current_timestamp(),
   `LastUpdated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()

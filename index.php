@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/magic.css">
+    <link rel="stylesheet" href="css/homepagestyle.css">
     <title>Homepage</title>
 </head>
 <body>
@@ -14,8 +15,8 @@
         <button id="SideMenuBtn" onclick="openMenu()" class="scroll-button">&#10094;</button>
     </div>
     <div id="SideMenu" class="Menu-wrapper">PP
-        <div class="logoutbtn">
-            <p>This is not a button</p>
+        <div onclick="Login_out()"class="login-outbtn">
+            <p>Registrieren</p>
         </div>
     </div>
 
