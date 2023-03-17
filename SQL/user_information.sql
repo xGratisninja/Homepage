@@ -32,7 +32,7 @@ CREATE TABLE `user_information` (
   `UserName` varchar(255) NOT NULL,
   `UserPassword` varchar(255) NOT NULL,
   `UserEmail` varchar(255) NOT NULL,
-  `UserRole` enum('admin','user') NOT NULL,
+  `UserRole` enum('admin','user') NOT NULL DEFAULT 'user',
   `Created` timestamp NOT NULL DEFAULT current_timestamp(),
   `LastUpdated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

@@ -1,4 +1,4 @@
-function Error(Message,type) {
+function ErrorHandling(Message,type) {
     if(type == "text"){
         let EditMessage = '<p style="color:Red;font-weight: bold;">An Error Occured('+Message+')</p>'
         return(EditMessage)

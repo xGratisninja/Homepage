@@ -11,37 +11,101 @@ $pdo = new PDO('mysql:host=localhost;dbname=homepage', 'root', '');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css">´
+    <script>
+        function ErrorHandling(Message, type) {
+            if (type == "text") {
+                let EditMessage = 'document.getElementbyId("Errors").innerHTML+=<p style="color:Red;font-weight: bold;">An Error Occured(' + Message + ')</p>'
+                return (EditMessage)
+            } else if (type == "alert") {
+                let EditMessage = 'An Error Occured(' + Message + ')'
+                alert(EditMessage)
+            }
+        }
+    </script>
 </head>
-<?php
-//require '../db_connect.php';
-//session_start();
-if (isset($_GET['sentForm'])) {
-    $username = $_POST['userName'];
-    $email = $_POST['userEmail'];
-    $password = $_POST['userPassword'];
-    //Check for username
-    $statement = $pdo->prepare("SELECT * FROM user_information WHERE userName = :username");
-    $result = $statement->execute(array('username' => $username));
-    $user = $statement->fetch();
-    if ($user !== false) {
-        echo 'Nutzername bereits vergeben<br>';
-        $error = true;
-    }
-}
-?>
 
 <body>
-    <h1 class="header">Registrieren</h1>
-    <br><br><br>
+    <h1 class="header">Registration</h1>
+    <br>
+    <div id="Errors"></div><br>
     <div class="Register-form">
-        <form action="?sentForm=1" method="post">
+        <form action="?register=1" method="post">
             <input autocomplete="off" type="text" size="40" maxlength="27" name="userName" placeholder="Username..." class="FormFeld"><br>
             <input autocomplete="off" type="email" size="40" maxlength="250" name="userEmail" placeholder="E-mail..." class="FormFeld"><br>
             <input autocomplete="off" type="password" size="40" maxlength="250" name="userPassword" placeholder="Password..." class="FormFeld"><br>
-            <input class="FormFeldBtn" type="submit" value="Registrieren">
+            <input class="FormFeldBtn" type="submit" value="Register">
         </form>
     </div>
 </body>
+<?php
+if (isset($_GET['register'])) {
+    $UserMadeError = false;
+    $username = $_POST['userName'];
+    $email = $_POST['userEmail'];
+    $password = $_POST['userPassword'];
+
+    // Check if entry fields aren't empty
+    if (strlen($password) == 0) {
+        echo "<script>
+        ErrorHandling('Please enter a Password.<br>','text');
+        </script>";
+        $UserMadeError = true;
+    } else if ($username == "") {
+        echo "<script>
+        ErrMessage = ErrorHandling('Please enter an Username.<br>','text');
+        </script>";
+        $UserMadeError = true;
+    } else if (strlen($email) == 0) {
+        echo "<script>
+        ErrorHandling('Please enter an Email.<br>','text');
+        </script>";
+        $UserMadeError = true;
+    }
+
+    //Check if username is taken
+    $statement = $pdo->prepare("SELECT * FROM user_information WHERE userName = :username");
+    $result = $statement->execute(array('username' => $username));
+    $fetch = $statement->fetch();
+    if ($fetch !== false) {
+        echo "<script>
+        ErrorHandling('Username is already Taken.<br>','text');
+        </script>";
+        $UserMadeError = true;
+    }
+    //Validating if E-Mail is entered correctly
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo "<script>
+        ErrorHandling('Please enter a correct E-Mail.<br>','text');
+        </script>";
+        $UserMadeError = true;
+    }
+    // Check if E-Mail is taken
+    $statement = $pdo->prepare("SELECT * FROM user_information WHERE UserEmail = :userEmail");
+    $result = $statement->execute(array('userEmail' => $email));
+    $fetch = $statement->fetch();
+    if ($fetch !== false) {
+        echo "<script>
+        ErrorHandling('E-Mail is already Taken.<br>','text')
+        </script>";
+        $UserMadeError = true;
+    }
+    if (!$UserMadeError) {
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $statement = $pdo->prepare("INSERT INTO user_information (UserName, UserPassword, UserEmail) VALUES (:username,:hashedPassword,:email)");
+        $result = $statement->execute(array('username' => $username, 'hashedPassword' => $hashedPassword, 'email' => $email));
+        if ($result) {
+            echo "<script>
+            document.getElementbyId('Errors').innerHTML += ErrMessage
+            </script>;";
+        } else {
+            echo "<script>
+            ErrorHandling('Error whilst saving into database.<br>','text');
+            </script>";
+        }
+    }
+}
+
+?>
 
 </html>
