@@ -11,7 +11,7 @@ $pdo = new PDO('mysql:host=localhost;dbname=homepage', 'root', '');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="css/style.css">´
+    <link rel="stylesheet" href="css/style.css">
     <script>
         function ErrorHandling(Message, type) {
             if (type == "text") {
@@ -51,45 +51,51 @@ if (isset($_GET['register'])) {
         ErrorHandling('Please enter a Password.<br>','text');
         </script>";
         $UserMadeError = true;
-    } else if ($username == "") {
+    }
+
+    // Username handling
+    if ($username == "") {
         echo "<script>
         ErrMessage = ErrorHandling('Please enter an Username.<br>','text');
         </script>";
         $UserMadeError = true;
-    } else if (strlen($email) == 0) {
+    } else if (!$UserMadeError) {
+        //Check if username is taken
+        $statement = $pdo->prepare("SELECT * FROM user_information WHERE userName = :username");
+        $result = $statement->execute(array('username' => $username));
+        $fetch = $statement->fetch();
+        if ($fetch !== false) {
+            echo "<script>
+            ErrorHandling('Username is already Taken.<br>','text');
+            </script>";
+            $UserMadeError = true;
+        }
+    }
+    // E-Mail handling
+    if (strlen($email) == 0) {
         echo "<script>
         ErrorHandling('Please enter an Email.<br>','text');
         </script>";
         $UserMadeError = true;
-    }
-
-    //Check if username is taken
-    $statement = $pdo->prepare("SELECT * FROM user_information WHERE userName = :username");
-    $result = $statement->execute(array('username' => $username));
-    $fetch = $statement->fetch();
-    if ($fetch !== false) {
-        echo "<script>
-        ErrorHandling('Username is already Taken.<br>','text');
-        </script>";
-        $UserMadeError = true;
-    }
-    //Validating if E-Mail is entered correctly
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        //Validating if E-Mail is entered correctly
         echo "<script>
         ErrorHandling('Please enter a correct E-Mail.<br>','text');
         </script>";
         $UserMadeError = true;
+    } else if (!$UserMadeError) {
+        // Check if E-Mail is taken
+        $statement = $pdo->prepare("SELECT * FROM user_information WHERE UserEmail = :userEmail");
+        $result = $statement->execute(array('userEmail' => $email));
+        $fetch = $statement->fetch();
+        if ($fetch !== false) {
+            echo "<script>
+            ErrorHandling('E-Mail is already Taken.<br>','text')
+            </script>";
+            $UserMadeError = true;
+        }
     }
-    // Check if E-Mail is taken
-    $statement = $pdo->prepare("SELECT * FROM user_information WHERE UserEmail = :userEmail");
-    $result = $statement->execute(array('userEmail' => $email));
-    $fetch = $statement->fetch();
-    if ($fetch !== false) {
-        echo "<script>
-        ErrorHandling('E-Mail is already Taken.<br>','text')
-        </script>";
-        $UserMadeError = true;
-    }
+
     if (!$UserMadeError) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         $statement = $pdo->prepare("INSERT INTO user_information (UserName, UserPassword, UserEmail) VALUES (:username,:hashedPassword,:email)");
