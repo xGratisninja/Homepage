@@ -56,7 +56,7 @@ if (isset($_GET['register'])) {
     // Username handling
     if ($username == "") {
         echo "<script>
-        ErrMessage = ErrorHandling('Please enter an Username.<br>','text');
+        ErrorHandling('Please enter an Username.<br>','text');
         </script>";
         $UserMadeError = true;
     } else if (!$UserMadeError) {
