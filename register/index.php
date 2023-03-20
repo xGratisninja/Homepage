@@ -15,22 +15,27 @@ $pdo = new PDO('mysql:host=localhost;dbname=homepage', 'root', '');
     <script>
         function ErrorHandling(Message, type) {
             if (type == "text") {
-                let EditMessage = 'document.getElementbyId("Errors").innerHTML+=<p style="color:Red;font-weight: bold;">An Error Occured(' + Message + ')</p>'
-                return (EditMessage)
+                document.getElementById("Errors").innerHTML += Message
             } else if (type == "alert") {
-                let EditMessage = 'An Error Occured(' + Message + ')'
-                alert(EditMessage)
+                alert(Message)
             }
         }
     </script>
+    <style>
+        #Errors {
+            text-align: center;
+            color: Red;
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <body>
     <h1 class="header">Registration</h1>
     <br>
-    <div id="Errors"></div><br>
+    <p id="Errors"> </p><br>
     <div class="Register-form">
-        <form action="?register=1" method="post">
+        <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
             <input autocomplete="off" type="text" size="40" maxlength="27" name="userName" placeholder="Username..." class="FormFeld"><br>
             <input autocomplete="off" type="email" size="40" maxlength="250" name="userEmail" placeholder="E-mail..." class="FormFeld"><br>
             <input autocomplete="off" type="password" size="40" maxlength="250" name="userPassword" placeholder="Password..." class="FormFeld"><br>
@@ -39,11 +44,12 @@ $pdo = new PDO('mysql:host=localhost;dbname=homepage', 'root', '');
     </div>
 </body>
 <?php
-if (isset($_GET['register'])) {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $UserMadeError = false;
-    $username = $_POST['userName'];
-    $email = $_POST['userEmail'];
-    $password = $_POST['userPassword'];
+    $username = CheckInput($_POST['userName']);
+    $email = CheckInput($_POST['userEmail']);
+    $password = CheckInput($_POST['userPassword']);
+
 
     // Check if entry fields aren't empty
     if (strlen($password) == 0) {
@@ -102,7 +108,7 @@ if (isset($_GET['register'])) {
         $result = $statement->execute(array('username' => $username, 'hashedPassword' => $hashedPassword, 'email' => $email));
         if ($result) {
             echo "<script>
-            document.getElementbyId('Errors').innerHTML += ErrMessage
+            location.href = '../../Homepage';
             </script>;";
         } else {
             echo "<script>
@@ -111,7 +117,13 @@ if (isset($_GET['register'])) {
         }
     }
 }
-
+function CheckInput($data)
+{
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
 ?>
 
 </html>
